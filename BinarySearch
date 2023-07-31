@@ -1,0 +1,86 @@
+// Pragrammer Zakir Faizi 07/30/23
+// Lab06_BinarySearch
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Scanner;
+
+class PrefixExpressionEvaluator {
+
+  // Method to evaluate a prefix expression and return the result
+  public static double evaluateExpression(String expression) {
+    // Create a stack to store intermediate results
+    Deque<Double> stack = new ArrayDeque<>();
+
+    // Split the expression into tokens using whitespace as the delimiter
+    String[] tokens = expression.trim().split("\\s+");
+
+    // Process each token in reverse order (from right to left)
+    for (int i = tokens.length - 1; i >= 0; i--) {
+      String token = tokens[i];
+
+      // Check for empty token before processing
+      if (!token.isEmpty()) {
+        // If the token is an operator, pop the last two values from the stack,
+        // perform the operation, and push the result back onto the stack.
+        if (isOperator(token)) {
+          double operand1 = stack.pop();
+          double operand2 = stack.pop();
+          char operator = token.charAt(0);
+          double result = evaluate(operand1, operand2, operator);
+          stack.push(result);
+        } else {
+          // If the token is not an operator, parse it as a double and push it onto the
+          // stack.
+          double operand = Double.parseDouble(token);
+          stack.push(operand);
+        }
+      }
+    }
+
+    // The final result will be the last value remaining in the stack.
+    return stack.pop();
+  }
+
+  // Method to check if a token is an operator ('+' or '*')
+  public static boolean isOperator(String token) {
+    return token.equals("+") || token.equals("*");
+  }
+
+  // Method to perform the arithmetic operation based on the operator
+  public static double evaluate(double operand1, double operand2, char operator) {
+    switch (operator) {
+      case '+':
+        return operand1 + operand2;
+      case '*':
+        return operand1 * operand2;
+      default:
+        // If the operator is not valid, throw an exception
+        throw new IllegalArgumentException("Invalid operator: " + operator);
+    }
+  }
+
+  // Main method to interact with the user and run the program
+  public static void main(String[] args) {
+    Scanner scanner = new Scanner(System.in);
+    String expression;
+
+    // Repeat until the user types 'exit'
+    do {
+      System.out.print("Enter prefix expression (or type 'exit' to quit): ");
+      expression = scanner.nextLine();
+
+      if (!expression.equalsIgnoreCase("exit")) {
+        // Replace non-breaking spaces with regular spaces in the expression
+        expression = expression.replace("\u2003", " ");
+
+        // Evaluate the expression and display the result
+        System.out.println("The Prefix Expression is: " + expression);
+        System.out.println("The expression Evaluates to: " + evaluateExpression(expression));
+      }
+    } while (!expression.equalsIgnoreCase("exit"));
+
+    System.out.println("Done.");
+    scanner.close();
+  }
+}
